@@ -8,7 +8,13 @@
     "strict": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/schemas/*": ["src/schemas/*"],
+      "@/lib/*": ["src/lib/*"],
+      "@/routes/*": ["src/routes/*"]
+    }
   },
   "include": ["**/*.ts"],
   "exclude": ["node_modules", ".keystone"]

@@ -4,8 +4,15 @@
 type Product {
   id: ID!
   name: String
+  slug: String
   price: Int
+  breed: String
+  size: String
+  grade: String
   inStock: Boolean
+  published: Boolean
+  images(where: ProductImageWhereInput! = {}, orderBy: [ProductImageOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: ProductImageWhereUniqueInput): [ProductImage!]
+  imagesCount(where: ProductImageWhereInput! = {}): Int
   createdAt: DateTime
 }
 
@@ -13,6 +20,7 @@ scalar DateTime @specifiedBy(url: "https://datatracker.ietf.org/doc/html/rfc3339
 
 input ProductWhereUniqueInput {
   id: ID
+  slug: String
 }
 
 input ProductWhereInput {
@@ -21,8 +29,14 @@ input ProductWhereInput {
   NOT: [ProductWhereInput!]
   id: IDFilter
   name: StringFilter
+  slug: StringFilter
   price: IntFilter
+  breed: StringFilter
+  size: StringFilter
+  grade: StringFilter
   inStock: BooleanFilter
+  published: BooleanFilter
+  images: ProductImageManyRelationFilter
   createdAt: DateTimeNullableFilter
 }
 
@@ -87,6 +101,12 @@ input BooleanFilter {
   not: BooleanFilter
 }
 
+input ProductImageManyRelationFilter {
+  every: ProductImageWhereInput
+  some: ProductImageWhereInput
+  none: ProductImageWhereInput
+}
+
 input DateTimeNullableFilter {
   equals: DateTime
   in: [DateTime!]
@@ -101,8 +121,13 @@ input DateTimeNullableFilter {
 input ProductOrderByInput {
   id: OrderDirection
   name: OrderDirection
+  slug: OrderDirection
   price: OrderDirection
+  breed: OrderDirection
+  size: OrderDirection
+  grade: OrderDirection
   inStock: OrderDirection
+  published: OrderDirection
   createdAt: OrderDirection
 }
 
@@ -113,9 +138,22 @@ enum OrderDirection {
 
 input ProductUpdateInput {
   name: String
+  slug: String
   price: Int
+  breed: String
+  size: String
+  grade: String
   inStock: Boolean
+  published: Boolean
+  images: ProductImageRelateToManyForUpdateInput
   createdAt: DateTime
+}
+
+input ProductImageRelateToManyForUpdateInput {
+  disconnect: [ProductImageWhereUniqueInput!]
+  set: [ProductImageWhereUniqueInput!]
+  create: [ProductImageCreateInput!]
+  connect: [ProductImageWhereUniqueInput!]
 }
 
 input ProductUpdateArgs {
@@ -125,9 +163,272 @@ input ProductUpdateArgs {
 
 input ProductCreateInput {
   name: String
+  slug: String
   price: Int
+  breed: String
+  size: String
+  grade: String
   inStock: Boolean
+  published: Boolean
+  images: ProductImageRelateToManyForCreateInput
   createdAt: DateTime
+}
+
+input ProductImageRelateToManyForCreateInput {
+  create: [ProductImageCreateInput!]
+  connect: [ProductImageWhereUniqueInput!]
+}
+
+type ProductImage {
+  id: ID!
+  image: CloudinaryImage_File
+  altText: String
+  product: Product
+  createdAt: DateTime
+}
+
+type CloudinaryImage_File {
+  id: ID
+  filename: String
+  originalFilename: String
+  mimetype: String
+  encoding: String
+  publicUrl: String
+  publicUrlTransformed(transformation: CloudinaryImageFormat): String
+}
+
+"""
+Mirrors the formatting options [Cloudinary provides](https://cloudinary.com/documentation/image_transformation_reference).
+All options are strings as they ultimately end up in a URL.
+"""
+input CloudinaryImageFormat {
+  """ Rewrites the filename to be this pretty string. Do not include `/` or `.`
+  """
+  prettyName: String
+  width: String
+  height: String
+  crop: String
+  aspect_ratio: String
+  gravity: String
+  zoom: String
+  x: String
+  y: String
+  format: String
+  fetch_format: String
+  quality: String
+  radius: String
+  angle: String
+  effect: String
+  opacity: String
+  border: String
+  background: String
+  overlay: String
+  underlay: String
+  default_image: String
+  delay: String
+  color: String
+  color_space: String
+  dpr: String
+  page: String
+  density: String
+  flags: String
+  transformation: String
+}
+
+input ProductImageWhereUniqueInput {
+  id: ID
+}
+
+input ProductImageWhereInput {
+  AND: [ProductImageWhereInput!]
+  OR: [ProductImageWhereInput!]
+  NOT: [ProductImageWhereInput!]
+  id: IDFilter
+  altText: StringFilter
+  product: ProductWhereInput
+  createdAt: DateTimeNullableFilter
+}
+
+input ProductImageOrderByInput {
+  id: OrderDirection
+  altText: OrderDirection
+  createdAt: OrderDirection
+}
+
+input ProductImageUpdateInput {
+  image: Upload
+  altText: String
+  product: ProductRelateToOneForUpdateInput
+  createdAt: DateTime
+}
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
+input ProductRelateToOneForUpdateInput {
+  create: ProductCreateInput
+  connect: ProductWhereUniqueInput
+  disconnect: Boolean
+}
+
+input ProductImageUpdateArgs {
+  where: ProductImageWhereUniqueInput!
+  data: ProductImageUpdateInput!
+}
+
+input ProductImageCreateInput {
+  image: Upload
+  altText: String
+  product: ProductRelateToOneForCreateInput
+  createdAt: DateTime
+}
+
+input ProductRelateToOneForCreateInput {
+  create: ProductCreateInput
+  connect: ProductWhereUniqueInput
+}
+
+type Order {
+  id: ID!
+  orderNumber: String
+  customerName: String
+  customerEmail: String
+  customerPhone: String
+  shippingAddress: JSON
+  orderItems: JSON
+  totalAmount: Int
+  stripePaymentIntentId: String
+  status: String
+  createdAt: DateTime
+  paidAt: DateTime
+  shippedAt: DateTime
+}
+
+input OrderWhereUniqueInput {
+  id: ID
+  orderNumber: String
+}
+
+input OrderWhereInput {
+  AND: [OrderWhereInput!]
+  OR: [OrderWhereInput!]
+  NOT: [OrderWhereInput!]
+  id: IDFilter
+  orderNumber: StringFilter
+  customerName: StringFilter
+  customerEmail: StringFilter
+  customerPhone: StringFilter
+  totalAmount: IntFilter
+  stripePaymentIntentId: StringFilter
+  status: StringFilter
+  createdAt: DateTimeNullableFilter
+  paidAt: DateTimeNullableFilter
+  shippedAt: DateTimeNullableFilter
+}
+
+input OrderOrderByInput {
+  id: OrderDirection
+  orderNumber: OrderDirection
+  customerName: OrderDirection
+  customerEmail: OrderDirection
+  customerPhone: OrderDirection
+  totalAmount: OrderDirection
+  stripePaymentIntentId: OrderDirection
+  status: OrderDirection
+  createdAt: OrderDirection
+  paidAt: OrderDirection
+  shippedAt: OrderDirection
+}
+
+input OrderUpdateInput {
+  orderNumber: String
+  customerName: String
+  customerEmail: String
+  customerPhone: String
+  shippingAddress: JSON
+  orderItems: JSON
+  totalAmount: Int
+  stripePaymentIntentId: String
+  status: String
+  createdAt: DateTime
+  paidAt: DateTime
+  shippedAt: DateTime
+}
+
+input OrderUpdateArgs {
+  where: OrderWhereUniqueInput!
+  data: OrderUpdateInput!
+}
+
+input OrderCreateInput {
+  orderNumber: String
+  customerName: String
+  customerEmail: String
+  customerPhone: String
+  shippingAddress: JSON
+  orderItems: JSON
+  totalAmount: Int
+  stripePaymentIntentId: String
+  status: String
+  createdAt: DateTime
+  paidAt: DateTime
+  shippedAt: DateTime
+}
+
+type Page {
+  id: ID!
+  title: String
+  slug: String
+  content: String
+  published: Boolean
+  updatedAt: DateTime
+}
+
+input PageWhereUniqueInput {
+  id: ID
+  slug: String
+}
+
+input PageWhereInput {
+  AND: [PageWhereInput!]
+  OR: [PageWhereInput!]
+  NOT: [PageWhereInput!]
+  id: IDFilter
+  title: StringFilter
+  slug: StringFilter
+  content: StringFilter
+  published: BooleanFilter
+  updatedAt: DateTimeNullableFilter
+}
+
+input PageOrderByInput {
+  id: OrderDirection
+  title: OrderDirection
+  slug: OrderDirection
+  content: OrderDirection
+  published: OrderDirection
+  updatedAt: OrderDirection
+}
+
+input PageUpdateInput {
+  title: String
+  slug: String
+  content: String
+  published: Boolean
+  updatedAt: DateTime
+}
+
+input PageUpdateArgs {
+  where: PageWhereUniqueInput!
+  data: PageUpdateInput!
+}
+
+input PageCreateInput {
+  title: String
+  slug: String
+  content: String
+  published: Boolean
+  updatedAt: DateTime
 }
 
 """
@@ -142,12 +443,39 @@ type Mutation {
   updateProducts(data: [ProductUpdateArgs!]!): [Product]
   deleteProduct(where: ProductWhereUniqueInput!): Product
   deleteProducts(where: [ProductWhereUniqueInput!]!): [Product]
+  createProductImage(data: ProductImageCreateInput!): ProductImage
+  createProductImages(data: [ProductImageCreateInput!]!): [ProductImage]
+  updateProductImage(where: ProductImageWhereUniqueInput!, data: ProductImageUpdateInput!): ProductImage
+  updateProductImages(data: [ProductImageUpdateArgs!]!): [ProductImage]
+  deleteProductImage(where: ProductImageWhereUniqueInput!): ProductImage
+  deleteProductImages(where: [ProductImageWhereUniqueInput!]!): [ProductImage]
+  createOrder(data: OrderCreateInput!): Order
+  createOrders(data: [OrderCreateInput!]!): [Order]
+  updateOrder(where: OrderWhereUniqueInput!, data: OrderUpdateInput!): Order
+  updateOrders(data: [OrderUpdateArgs!]!): [Order]
+  deleteOrder(where: OrderWhereUniqueInput!): Order
+  deleteOrders(where: [OrderWhereUniqueInput!]!): [Order]
+  createPage(data: PageCreateInput!): Page
+  createPages(data: [PageCreateInput!]!): [Page]
+  updatePage(where: PageWhereUniqueInput!, data: PageUpdateInput!): Page
+  updatePages(data: [PageUpdateArgs!]!): [Page]
+  deletePage(where: PageWhereUniqueInput!): Page
+  deletePages(where: [PageWhereUniqueInput!]!): [Page]
 }
 
 type Query {
   product(where: ProductWhereUniqueInput!): Product
   products(where: ProductWhereInput! = {}, orderBy: [ProductOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: ProductWhereUniqueInput): [Product!]
   productsCount(where: ProductWhereInput! = {}): Int
+  productImage(where: ProductImageWhereUniqueInput!): ProductImage
+  productImages(where: ProductImageWhereInput! = {}, orderBy: [ProductImageOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: ProductImageWhereUniqueInput): [ProductImage!]
+  productImagesCount(where: ProductImageWhereInput! = {}): Int
+  order(where: OrderWhereUniqueInput!): Order
+  orders(where: OrderWhereInput! = {}, orderBy: [OrderOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: OrderWhereUniqueInput): [Order!]
+  ordersCount(where: OrderWhereInput! = {}): Int
+  page(where: PageWhereUniqueInput!): Page
+  pages(where: PageWhereInput! = {}, orderBy: [PageOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: PageWhereUniqueInput): [Page!]
+  pagesCount(where: PageWhereInput! = {}): Int
   keystone: KeystoneMeta!
 }
 

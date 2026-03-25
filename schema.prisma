@@ -12,9 +12,51 @@ generator client {
 }
 
 model Product {
-  id        String    @id @default(cuid())
-  name      String    @default("")
+  id        String         @id @default(cuid())
+  name      String         @default("")
+  slug      String         @unique @default("")
   price     Int
-  inStock   Boolean   @default(true)
+  breed     String         @default("")
+  size      String
+  grade     String
+  inStock   Boolean        @default(true)
+  published Boolean        @default(false)
+  images    ProductImage[] @relation("ProductImage_product")
+  createdAt DateTime?      @default(now())
+}
+
+model ProductImage {
+  id        String    @id @default(cuid())
+  image     Json?
+  altText   String    @default("")
+  product   Product?  @relation("ProductImage_product", fields: [productId], references: [id])
+  productId String?   @map("product")
   createdAt DateTime? @default(now())
+
+  @@index([productId])
+}
+
+model Order {
+  id                    String    @id @default(cuid())
+  orderNumber           String    @unique @default("")
+  customerName          String    @default("")
+  customerEmail         String    @default("")
+  customerPhone         String    @default("")
+  shippingAddress       Json?
+  orderItems            Json?
+  totalAmount           Int
+  stripePaymentIntentId String    @default("")
+  status                String    @default("pending")
+  createdAt             DateTime? @default(now())
+  paidAt                DateTime?
+  shippedAt             DateTime?
+}
+
+model Page {
+  id        String    @id @default(cuid())
+  title     String    @default("")
+  slug      String    @unique @default("")
+  content   String    @default("")
+  published Boolean   @default(false)
+  updatedAt DateTime? @default(now()) @updatedAt
 }
